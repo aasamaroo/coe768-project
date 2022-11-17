@@ -31,7 +31,7 @@ void	reaper(int sig)
 int main(int argc, char **argv){ 
     int downloadClient, client_len;     
     int i, j, k, s;
-    int numberOfRegistedContent = 0;
+    int numberOfRegisteredContent = 0;
     int TCP;
     int UDP;
     int alen;
@@ -54,7 +54,6 @@ int main(int argc, char **argv){
     pud toClient;
     pud receivedData;
     port = atoi(argv[2]);
-    peerName = argv[1];
     charPort= argv[2];
     bool registrationPassed;
     
