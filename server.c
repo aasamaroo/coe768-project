@@ -31,7 +31,7 @@ void	reaper(int sig)
 int main(int argc, char **argv){ 
     int downloadClient, client_len;     
     int i, j, k, s;
-    int numberOfRegisteredContent = 0;
+    int numberofRegisteredContent = 0;
     int TCP;
     int UDP;
     int alen;
@@ -47,7 +47,7 @@ int main(int argc, char **argv){
     struct sockaddr_in sin;     //endpoint address   
     char Addr[10];
     char Name[10];
-    char contentList[contentLength][contentLength];
+    char *contentList[contentLength][contentLength];
     char Content[10];
     char ErrorConflict[] = "Name conflict, please register with another name.";
     
@@ -100,7 +100,7 @@ int main(int argc, char **argv){
 		          if(strcmp(Content, contentList[i][2]) == 0){
 		                toClient.type = 'E';
                     strcpy(toClient.data, ErrorConflict);
-                    sendto(UDP, (struct PDU*) &toIClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
+                    sendto(UDP, (struct PDU*) &toClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
                     continue;
 		          }
            } 
@@ -116,7 +116,7 @@ int main(int argc, char **argv){
                       
                     }
                       
-                    numberofRegiteredContent++;
+                    numberofRegisteredContent++;
                       
                     toClient.type = 'A';
                     strcat(toClient.data, "Success");
@@ -141,16 +141,16 @@ int main(int argc, char **argv){
 		          if(strcmp(Content, contentList[i][2]) == 0){
 		                toClient.type = 'S';
 		                strcpy(toClient.data, contentList[i][3]); //1 = Name, 2 = Content, 3 = Address - alredy registered with ' ' from client side
-                    sendto(UDP, (struct PDU*) &toIClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
+                    sendto(UDP, (struct PDU*) &toClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
                     i = numberofRegisteredContent; //break out of for loop -> client only needs single peer to download from    
 		          }
 		      } 
 		      //reached end of registered content array and no match
 		      else if (i == numberofRegisteredContent-1){
-		        toClient.type = 'E';
-             		strcat(toClient.data, "Please verify content request, deos not exist.");
-             		sendto(UDP, (struct PDU*) &toIClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
-             		continue;
+		         toClient.type = 'E';
+             strcat(toClient.data, "Please verify content request, deos not exist.");
+             sendto(UDP, (struct PDU*) &toClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
+             continue;
 		      }
 		    }
 		 } 
@@ -166,12 +166,13 @@ int main(int argc, char **argv){
                         memset(contentList[i], '\0', sizeof(contentList[i])); //check if deletion/initialization works with 1-D reference
                     }
                     else{
-                        for(i; i < numberOfRegistedContent; i++){
-                            strcpy(contentList[i], contentList[i + 1]);
+                        for(i; i < numberofRegisteredContent; i++){
+                            for(j=0; j<3; j++)
+                                strcpy(contentList[i][j], contentList[i + 1][j]);
                         }
-                        memset(contentList[numberOfRegistedContent], '\0', sizeof(contentList[numberOfRegistedContent]));
+                        memset(contentList[numberofRegisteredContent], '\0', sizeof(contentList[numberofRegisteredContent]));
                     }
-                    numberOfRegistedContent--;
+                    numberofRegisteredContent--;
                     printf("%s\n", receivedData.data);
                 }
                 
@@ -180,12 +181,11 @@ int main(int argc, char **argv){
                 sendto(UDP, (struct PDU*) &toClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
                 continue;
 		          }
-		     }
 		     //reached end of registered content array and no match
-		      else if (i == numberofRegisteredContent-1){
+		      else if (i == numberofRegisteredContent-1 && toClient.type != 'A'){
 		         toClient.type = 'E';
              strcat(toClient.data, "Please verify content request, deos not exist.");
-             sendto(UDP, (struct PDU*) &toIClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
+             sendto(UDP, (struct PDU*) &toClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
              continue;
 		      }
 		   }
@@ -205,7 +205,7 @@ int main(int argc, char **argv){
 		      toClient.type = 'F';
 		     
 		     strcpy(toClient.data, contentList[i][2]);//copy content name to data field
-		     sendto(UDP, (struct PDU*) &toIClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen);
+		     sendto(UDP, (struct PDU*) &toClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen);
 		   }
 		 }
 		  
