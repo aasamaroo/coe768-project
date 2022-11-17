@@ -148,10 +148,10 @@ int main(int argc, char **argv){
 		      } 
 		      //reached end of registered content array and no match
 		      else if (i == numberofRegisteredContent-1){
-		         toClient.type = 'E';
-             strcat(toClient.data, "Please verify content request, deos not exist.");
-             sendto(UDP, (struct PDU*) &toIClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
-             continue;
+		        toClient.type = 'E';
+             		strcat(toClient.data, "Please verify content request, deos not exist.");
+             		sendto(UDP, (struct PDU*) &toIClient, sizeof(toClient) + 1, 0, (struct sockaddr*) &clientADDR, alen); 
+             		continue;
 		      }
 		    }
 		 } 
